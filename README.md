@@ -82,6 +82,51 @@ Seeded accounts (change these immediately): `admin / Admin@12345`, `analyst / An
 
 > **Production:** replace `Jwt:SigningKey` in every service with a secret of at least 32 random bytes from environment variables or a secret store. Serve over HTTPS; `Auth:SecureCookies` must stay `true`.
 
+## Linux installation
+
+Every version tag (`v1.0.0`, `v1.0.1`, …) is built by GitHub Actions into ready-to-install packages for
+**linux-x64** and **linux-arm64**, attached to the [GitHub Release](../../releases). The server needs no SDKs.
+
+**Requirements on the server:** 64-bit Linux with systemd (Ubuntu 22.04+, Debian 12+, RHEL/Rocky/Alma 9+, Fedora),
+the ASP.NET Core 10 runtime and nftables:
+
+```bash
+# Ubuntu / Debian (the runtime package may need Microsoft's repository on older releases)
+sudo apt-get install -y aspnetcore-runtime-10.0 nftables
+# RHEL / Rocky / Alma / Fedora
+sudo dnf install -y aspnetcore-runtime-10.0 nftables
+```
+
+**Install the latest release** (detects x64/arm64, verifies the checksum, runs the installer):
+
+```bash
+# Private repository: sign in first with  gh auth login  (or export GITHUB_TOKEN=<token with repo read access>)
+gh release download -R seimranali/security-manager -p get.sh && sudo bash get.sh
+# Public repository:
+curl -fsSL https://github.com/seimranali/security-manager/releases/latest/download/get.sh | sudo bash
+```
+
+**Or manually:** download `security-manager-linux-x64.tar.gz` from the release, then
+
+```bash
+tar -xzf security-manager-linux-x64.tar.gz && cd security-manager-linux-x64
+sudo ./install.sh
+```
+
+Then open `http://localhost:5000` on the server (sign in as `admin` / `Admin@12345` and change the password).
+Services run under systemd (`securitymanager status|start|stop|restart|logs <component>`), data is kept in SQLite under
+`/var/lib/security-manager`, and firewall rules are enforced through nftables. Upgrading = installing a newer release
+(settings and data are kept). Details: [deploy/linux/README-LINUX.txt](deploy/linux/README-LINUX.txt).
+
+**Build from source on Linux** instead (needs the .NET 10 SDK and Node.js 22):
+
+```bash
+git clone https://github.com/seimranali/security-manager.git && cd security-manager
+bash deploy/linux/build-package.sh          # → dist/security-manager-linux-x64.tar.gz
+```
+
+**Publish a new release:** `git tag v1.0.1 && git push origin v1.0.1`.
+
 ## Running locally
 
 Prerequisites: .NET 10 SDK, Node 20+, SQL Server (default instance, Windows auth). Connection strings are in each `*.API/appsettings.json`.

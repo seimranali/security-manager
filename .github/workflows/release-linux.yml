@@ -1,0 +1,68 @@
+# Builds the Linux packages and attaches them to a GitHub Release.
+#   Release:   git tag v1.0.1 && git push origin v1.0.1
+#   Manual:    Actions > "Linux release" > Run workflow (builds and keeps the files as a workflow artifact)
+name: Linux release
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        rid: [linux-x64, linux-arm64]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install UI dependencies
+        working-directory: frontend
+        run: npm ci --no-audit --no-fund
+
+      - name: Build package (${{ matrix.rid }})
+        # Tests run once, on the x64 job.
+        run: bash deploy/linux/build-package.sh --rid ${{ matrix.rid }} ${{ matrix.rid != 'linux-x64' && '--skip-tests' || '' }}
+
+      - name: Checksum
+        working-directory: dist
+        run: sha256sum security-manager-${{ matrix.rid }}.tar.gz > security-manager-${{ matrix.rid }}.tar.gz.sha256
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: security-manager-${{ matrix.rid }}
+          path: |
+            dist/security-manager-${{ matrix.rid }}.tar.gz
+            dist/security-manager-${{ matrix.rid }}.tar.gz.sha256
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: build
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          path: out
+          merge-multiple: true
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" out/* deploy/linux/get.sh \
+            --title "Security Manager $GITHUB_REF_NAME" \
+            --notes "Linux install: download the package for your CPU (x64 or arm64), extract it and run \`sudo ./install.sh\`. Or use get.sh: see README (Linux installation)."
