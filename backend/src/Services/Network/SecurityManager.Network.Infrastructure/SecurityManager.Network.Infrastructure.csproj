@@ -1,0 +1,6 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="..\SecurityManager.Network.Application\SecurityManager.Network.Application.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\SecurityManager.Shared.Infrastructure\SecurityManager.Shared.Infrastructure.csproj" />
+  </ItemGroup>
+</Project>

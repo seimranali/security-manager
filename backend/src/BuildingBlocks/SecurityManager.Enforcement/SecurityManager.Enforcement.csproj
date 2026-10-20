@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Host-firewall enforcement core (Windows Firewall / nftables), shared by the Firewall service and the agent. -->
+  <ItemGroup>
+    <ProjectReference Include="..\SecurityManager.Shared.Kernel\SecurityManager.Shared.Kernel.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" />
+  </ItemGroup>
+  <ItemGroup>
+    <Using Include="Xunit" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Services\Firewall\SecurityManager.Firewall.Infrastructure\SecurityManager.Firewall.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\src\Services\Security\SecurityManager.Security.Infrastructure\SecurityManager.Security.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\src\Services\Scanner\SecurityManager.Scanner.Infrastructure\SecurityManager.Scanner.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\src\Services\Alert\SecurityManager.Alert.Infrastructure\SecurityManager.Alert.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\src\Services\Identity\SecurityManager.Identity.Infrastructure\SecurityManager.Identity.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\src\Services\Network\SecurityManager.Network.Infrastructure\SecurityManager.Network.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\src\Agent\SecurityManager.Agent\SecurityManager.Agent.csproj" />
+  </ItemGroup>
+</Project>

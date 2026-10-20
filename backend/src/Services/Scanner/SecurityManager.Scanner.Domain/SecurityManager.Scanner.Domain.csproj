@@ -1,0 +1,5 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\BuildingBlocks\SecurityManager.Shared.Kernel\SecurityManager.Shared.Kernel.csproj" />
+  </ItemGroup>
+</Project>
