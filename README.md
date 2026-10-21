@@ -82,6 +82,27 @@ Seeded accounts (change these immediately): `admin / Admin@12345`, `analyst / An
 
 > **Production:** replace `Jwt:SigningKey` in every service with a secret of at least 32 random bytes from environment variables or a secret store. Serve over HTTPS; `Auth:SecureCookies` must stay `true`.
 
+## Windows installation
+
+Every version tag is also built into `security-manager-win-x64.zip` on the [GitHub Release](../../releases).
+Requirements: Windows 10/11 or Windows Server 2019+ (64-bit). The ASP.NET Core 10 runtime is installed automatically
+with winget when missing; no SQL Server needed (SQLite).
+
+In **PowerShell as Administrator**:
+
+```powershell
+# Private repository: sign in first with  gh auth login  (or set $env:GITHUB_TOKEN = '<token with repo read>')
+gh release download -R seimranali/security-manager -p get.ps1 --clobber; .\get.ps1
+# Public repository:
+irm https://github.com/seimranali/security-manager/releases/latest/download/get.ps1 | iex
+```
+
+`get.ps1` downloads the zip, verifies its checksum and runs `Install.ps1`, which installs to `C:\Security Manager`
+(`-Target` to change), generates a unique signing key, and registers Windows services that start with Windows. The
+Firewall service runs as LocalSystem and applies your rules to Windows Firewall. **Or manually:** extract the zip and run
+`.\Install.ps1` as Administrator. Upgrade = run `get.ps1` again (settings and data are kept); uninstall =
+`C:\Security Manager\Uninstall-Services.ps1`.
+
 ## Linux installation
 
 Every version tag (`v1.0.0`, `v1.0.1`, …) is built by GitHub Actions into ready-to-install packages for
